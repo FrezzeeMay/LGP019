@@ -13,6 +13,8 @@
   var pushTimer = null;
   var pullTimer = null;
   var subscribed = false;
+  var photoMigrated = false;
+  var SHIRT_BUCKET = "shirt-photos";
 
   function K() { return window.KasKita; }
 
@@ -96,6 +98,14 @@
     var shirtPaid = {};
     (got[2].data || []).forEach(function (r) { shirtPaid[r.participant_id] = Number(r.amount) || 0; });
     var proj = got[3].data || {};
+    // foto: URL cloud menang; foto lokal lama (dataURL) dipakai hanya kalau cloud kosong,
+    // lalu diam-diam dipindah ke Storage agar ikut tampil di semua perangkat
+    var localPhoto = (local.shirt && local.shirt.photo) || null;
+    var legacyLocal = /^data:/.test(localPhoto || "");
+    if (!proj.photo_url && legacyLocal && !photoMigrated) {
+      photoMigrated = true;
+      migrateLegacyPhoto(localPhoto);
+    }
     var next = {
       participants: (got[0].data || []).map(function (r) {
         return { id: r.id, name: r.name, size: r.size, sizeCat: (r.size_cat === "anak" ? "anak" : "dewasa"), active: !!r.active };
@@ -110,7 +120,7 @@
       shirt: {
         name: proj.name || local.shirt.name,
         price: Number(proj.price) || local.shirt.price || 75000,
-        photo: local.shirt.photo || null
+        photo: proj.photo_url || (legacyLocal ? localPhoto : null)
       },
       activities: (got[4].data || []).map(function (r) {
         return { id: r.id, ts: Number(r.ts), by: r.by, text: r.text };
@@ -123,6 +133,43 @@
     });
     K().replaceState(next);
     return "pulled";
+  }
+
+  /* ---------- Foto baju: Storage agar tampil di semua perangkat ---------- */
+  function bucketPathOf(url) {
+    if (!url || url.indexOf(SHIRT_BUCKET + "/") < 0) return null;
+    return url.split(SHIRT_BUCKET + "/")[1].split("?")[0] || null;
+  }
+  async function uploadShirtPhoto(file, oldUrl) {
+    var s = db();
+    var ext = String((file.name || "").split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+    if (ext.length > 5) ext = "jpg";
+    var path = "desain-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7) + "." + ext;
+    var up = await s.storage.from(SHIRT_BUCKET).upload(path, file, { contentType: file.type || "image/" + ext, upsert: false });
+    if (up.error) throw new Error(up.error.message);
+    var pub = s.storage.from(SHIRT_BUCKET).getPublicUrl(path);
+    // hapus file lama biar tidak menumpuk (best-effort)
+    try {
+      var old = bucketPathOf(oldUrl);
+      if (old) await s.storage.from(SHIRT_BUCKET).remove([old]);
+    } catch (e) {}
+    return pub.data.publicUrl;
+  }
+  async function removeShirtPhoto(url) {
+    var p = bucketPathOf(url);
+    if (!p) return;
+    try { await db().storage.from(SHIRT_BUCKET).remove([p]); } catch (e) {}
+  }
+  // pindahkan foto lokal lama (dataURL) ke Storage sekali, setelah itu semua ikut tampil
+  async function migrateLegacyPhoto(dataUrl) {
+    try {
+      var blob = await (await fetch(dataUrl)).blob();
+      if (!blob.size || blob.size > 5 * 1024 * 1024) return;
+      var url = await uploadShirtPhoto(new File([blob], "desain.jpg", { type: blob.type || "image/jpeg" }), null);
+      K().state.shirt.photo = url;
+      K().save();
+      K().refreshAll();
+    } catch (e) {}
   }
 
   /* ---------- Dorong seluruh state lokal ke cloud ---------- */
@@ -166,8 +213,16 @@
       return { participant_id: pid, amount: Math.round(Number(st.shirtPaid[pid]) || 0) };
     });
     await syncTable("shirt_paid", spRows, "participant_id");
-    var pj = await s.from("shirt_project").upsert({ id: 1, name: st.shirt.name, price: Math.round(Number(st.shirt.price) || 0) });
-    if (pj.error) throw new Error(pj.error.message);
+    var photo = (st.shirt && st.shirt.photo) || null;
+    // dataURL lama tidak disimpan ke kolom (migrasi mengunggahnya terpisah)
+    var photoUrl = /^data:/.test(photo || "") ? null : photo;
+    var pj = await s.from("shirt_project").upsert({ id: 1, name: st.shirt.name, price: Math.round(Number(st.shirt.price) || 0), photo_url: photoUrl });
+    if (pj.error) {
+      // database lama yang belum run schema photo_url: simpan tanpa kolom itu
+      if (!/photo_url/i.test(pj.error.message || "")) throw new Error(pj.error.message);
+      var pj2 = await s.from("shirt_project").upsert({ id: 1, name: st.shirt.name, price: Math.round(Number(st.shirt.price) || 0) });
+      if (pj2.error) throw new Error(pj2.error.message);
+    }
     await syncTable("activities", st.activities.slice(0, 200).map(function (a) {
       return { id: a.id, ts: a.ts, by: a.by, text: a.text };
     }), "id");
@@ -288,6 +343,14 @@
       out.push({ label: "Client", ok: false, detail: String(e.message || e) });
       return out;
     }
+    try {
+      var bl = await s.storage.from(SHIRT_BUCKET).list("", { limit: 1 });
+      out.push(bl.error
+        ? { label: "Storage " + SHIRT_BUCKET, ok: false, detail: bl.error.message + " (run bagian STORAGE di schema)" }
+        : { label: "Storage " + SHIRT_BUCKET, ok: true, detail: "siap, foto tampil di semua perangkat" });
+    } catch (e) {
+      out.push({ label: "Storage " + SHIRT_BUCKET, ok: false, detail: String(e.message || e) });
+    }
     var tables = ["participants", "payments", "expenses", "shirt_project", "activities", "profiles"];
     for (var i = 0; i < tables.length; i++) {
       try {
@@ -308,6 +371,7 @@
     pull: pull, push: push, schedulePush: schedulePush, subscribe: subscribe,
     signIn: signIn, restoreSession: restoreSession, signOut: signOut,
     cachedUser: cachedUser, getProfiles: getProfiles, setDisabled: setDisabled, adminOp: adminOp,
+    uploadShirtPhoto: uploadShirtPhoto, removeShirtPhoto: removeShirtPhoto,
     CFG_KEY: CFG_KEY, OFF_KEY: OFF_KEY, baked: baked, cloudOff: cloudOff, setOff: setOff
   };
 })();

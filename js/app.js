@@ -69,6 +69,24 @@
     n = Math.round(Number(n) || 0);
     return "Rp" + n.toLocaleString("id-ID");
   }
+  // input nominal: ketik 20000 -> tampil "20.000". Simpan selalu angka polos.
+  function parseRupiah(v) {
+    var d = String(v == null ? "" : v).replace(/\D/g, "").slice(0, 13);
+    return d ? parseInt(d, 10) : 0;
+  }
+  function fmtRibuan(n) {
+    n = Math.round(Number(n) || 0);
+    return n.toLocaleString("id-ID");
+  }
+  function bindRupiah(id) {
+    var el = document.getElementById(id);
+    if (!el || el.getAttribute("data-rupiah")) return;
+    el.setAttribute("data-rupiah", "1");
+    el.addEventListener("input", function () {
+      var d = el.value.replace(/\D/g, "").slice(0, 13);
+      el.value = d ? Number(d).toLocaleString("id-ID") : "";
+    });
+  }
   function fmtDate(iso) {
     if (!iso) return "-";
     var d = new Date(iso + (iso.length <= 10 ? "T00:00:00" : ""));
@@ -608,7 +626,7 @@
   /* ---------- Settings ---------- */
   function renderSettings() {
     $("#setShirtName").value = state.shirt.name || "";
-    $("#setShirtPrice").value = state.shirt.price || 0;
+    $("#setShirtPrice").value = fmtRibuan(state.shirt.price || 0);
     renderCloud();
     var ul = $("#accountsList");
     if (!ul) return;
@@ -672,6 +690,7 @@
   window.KasKita = {
     state: state, save: save, $: $, $all: $all, esc: esc, uid: uid,
     fmtRp: fmtRp, fmtDate: fmtDate, todayISO: todayISO,
+    parseRupiah: parseRupiah, fmtRibuan: fmtRibuan, bindRupiah: bindRupiah,
     totalsByPid: totalsByPid, grandTotal: grandTotal,
     shirtTarget: shirtTarget, shirtCollected: shirtCollected,
     participantName: participantName, currentUser: currentUser, isSuper: isSuper, downloadCSV: downloadCSV,
@@ -870,7 +889,7 @@
       e.preventDefault();
       if (!requireAdmin()) return;
       var nm = $("#setShirtName").value.trim();
-      var pr = Math.round(Number($("#setShirtPrice").value) || 0);
+      var pr = Math.round(parseRupiah($("#setShirtPrice").value));
       if (nm.length < 3) { toast("Nama proyek minimal 3 huruf.", "err"); return; }
       if (pr < 1000) { toast("Harga minimal Rp1.000.", "err"); return; }
       state.shirt.name = nm;
@@ -1057,6 +1076,8 @@
         })
         .catch(function () { st.textContent = "Tes gagal dijalankan."; });
     });
+
+    bindRupiah("setShirtPrice");
 
     if ($("#payDate")) $("#payDate").value = todayISO();
   });

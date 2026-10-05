@@ -104,6 +104,7 @@
   function openExpenseNew() {
     var k = K();
     if (!k.requireAdmin()) return;
+    k.bindRupiah("xAmount");
     document.getElementById("mxTitle").textContent = "Catat Pengeluaran";
     document.getElementById("xId").value = "";
     document.getElementById("xTitle").value = "";
@@ -117,6 +118,8 @@
 
   function openNew(presetPid) {
     if (!K().requireAdmin()) return;
+    K().bindRupiah("payAmount");
+    K().bindRupiah("xAmount");
     fillUserOptions("payUser", presetPid || null);
     document.getElementById("mpayTitle").textContent = "Tambah Pembayaran";
     document.getElementById("payId").value = "";
@@ -134,7 +137,7 @@
     fillUserOptions("payUser", t.participantId);
     document.getElementById("mpayTitle").textContent = "Edit Pembayaran";
     document.getElementById("payId").value = t.id;
-    document.getElementById("payAmount").value = t.amount;
+    document.getElementById("payAmount").value = k.fmtRibuan(t.amount);
     document.getElementById("payDate").value = t.date;
     document.getElementById("payNote").value = t.note || "";
     k.openModal("modal-payment");
@@ -225,7 +228,7 @@
         document.getElementById("mxTitle").textContent = "Edit Pengeluaran";
         document.getElementById("xId").value = t.id;
         document.getElementById("xTitle").value = t.title;
-        document.getElementById("xAmount").value = t.amount;
+        document.getElementById("xAmount").value = k.fmtRibuan(t.amount);
         document.getElementById("xDate").value = t.date;
         document.getElementById("xNote").value = t.note || "";
         k.openModal("modal-expense");
@@ -254,7 +257,7 @@
       e.preventDefault();
       if (!k.requireAdmin()) return;
       var title = document.getElementById("xTitle").value.trim();
-      var amount = Math.round(Number(document.getElementById("xAmount").value) || 0);
+      var amount = Math.round(k.parseRupiah(document.getElementById("xAmount").value));
       var date = document.getElementById("xDate").value;
       var note = document.getElementById("xNote").value.trim();
       if (title.length < 2) { document.getElementById("xTitleErr").hidden = false; return; }
@@ -292,7 +295,7 @@
       e.preventDefault();
       if (!k.requireAdmin()) return;
       var pid = document.getElementById("payUser").value;
-      var amount = Math.round(Number(document.getElementById("payAmount").value) || 0);
+      var amount = Math.round(k.parseRupiah(document.getElementById("payAmount").value));
       var date = document.getElementById("payDate").value;
       var note = document.getElementById("payNote").value.trim();
       if (!pid) { k.toast("Pilih peserta dulu.", "err"); return; }

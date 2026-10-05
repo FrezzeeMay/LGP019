@@ -374,7 +374,7 @@
               <button class="btn btn-secondary btn-sm" type="button" id="shirtChangeBtn">Ganti foto</button>
               <button class="btn btn-ghost btn-sm danger" type="button" id="shirtRemoveBtn">Hapus foto</button>
             </div>
-            <p class="muted small">Preview tersimpan lokal, tidak diunggah ke server.</p>
+            <p class="muted small">Foto tampil di semua perangkat saat cloud tersambung (tercatat di Aktivitas). Kalau tidak, hanya tersimpan di perangkat ini.</p>
           </article>
 
           <article class="panel shirt-info">
@@ -471,7 +471,7 @@
             <h3 class="panel-title">Proyek baju</h3>
             <form id="shirtSettingsForm">
               <div class="field"><label for="setShirtName">Nama proyek</label><input id="setShirtName" type="text" maxlength="60"></div>
-              <div class="field"><label for="setShirtPrice">Harga per orang (Rp)</label><input id="setShirtPrice" type="number" min="1000" step="500"></div>
+              <div class="field"><label for="setShirtPrice">Harga per orang (Rp)</label><input id="setShirtPrice" type="text" inputmode="numeric"></div>
               <button class="btn btn-primary" type="submit">Simpan proyek</button>
             </form>
           </article>
@@ -567,7 +567,7 @@
     <form id="paymentForm" novalidate>
       <input type="hidden" id="payId">
       <div class="field"><label for="payUser">Nama peserta</label><select id="payUser"></select></div>
-      <div class="field"><label for="payAmount">Nominal (Rp)</label><input id="payAmount" type="number" min="1000" step="500" placeholder="cth: 5000" required><small class="field-err" id="payAmountErr" hidden>Nominal minimal Rp1.000.</small></div>
+      <div class="field"><label for="payAmount">Nominal (Rp)</label><input id="payAmount" type="text" inputmode="numeric" placeholder="cth: 5.000" required><small class="field-err" id="payAmountErr" hidden>Nominal minimal Rp1.000.</small></div>
       <div class="field"><label for="payDate">Tanggal</label><input id="payDate" type="date" required></div>
       <div class="field"><label for="payNote">Catatan (opsional)</label><input id="payNote" type="text" maxlength="80" placeholder="cth: kas minggu pertama"></div>
       <div class="modal-foot"><button class="btn btn-ghost" type="button" data-close>Batal</button><button class="btn btn-primary" type="submit">Simpan</button></div>
@@ -579,7 +579,7 @@
     <form id="expenseForm" novalidate>
       <input type="hidden" id="xId">
       <div class="field"><label for="xTitle">Keterangan</label><input id="xTitle" type="text" maxlength="60" placeholder="cth: beli konsumsi rapat" required><small class="field-err" id="xTitleErr" hidden>Isi keterangan dulu.</small></div>
-      <div class="field"><label for="xAmount">Nominal (Rp)</label><input id="xAmount" type="number" min="1000" step="500" placeholder="cth: 25000" required><small class="field-err" id="xAmountErr" hidden>Nominal minimal Rp1.000.</small></div>
+      <div class="field"><label for="xAmount">Nominal (Rp)</label><input id="xAmount" type="text" inputmode="numeric" placeholder="cth: 25.000" required><small class="field-err" id="xAmountErr" hidden>Nominal minimal Rp1.000.</small></div>
       <div class="field"><label for="xDate">Tanggal</label><input id="xDate" type="date" required></div>
       <div class="field"><label for="xNote">Catatan (opsional)</label><input id="xNote" type="text" maxlength="80" placeholder="cth: nota ada di bendahara"></div>
       <div class="modal-foot"><button class="btn btn-ghost" type="button" data-close>Batal</button><button class="btn btn-primary" type="submit">Simpan</button></div>

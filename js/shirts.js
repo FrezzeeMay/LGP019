@@ -104,6 +104,27 @@
       k.toast("Pilih file gambar.", "err");
       return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      k.toast("Maksimal 5 MB.", "err");
+      return;
+    }
+    var C = window.KasKitaCloud;
+    // cloud tersambung: unggah ke Storage, tampil di semua perangkat + tercatat di Aktivitas
+    if (C && C.enabled()) {
+      k.toast("Mengunggah foto...");
+      C.uploadShirtPhoto(file, k.state.shirt.photo)
+        .then(function (url) {
+          k.state.shirt.photo = url;
+          k.save(); render();
+          k.logActivity("mengganti foto desain baju");
+          k.toast("Foto baju diperbarui di semua perangkat.");
+        })
+        .catch(function (ex) {
+          k.toast("Gagal mengunggah: " + String((ex && ex.message) || "coba lagi"), "err");
+        });
+      return;
+    }
+    // mode lokal: simpan di perangkat ini saja
     if (file.size > 2.5 * 1024 * 1024) {
       k.toast("Maksimal 2,5 MB agar localStorage muat.", "err");
       return;
@@ -113,7 +134,7 @@
       k.state.shirt.photo = String(r.result);
       k.save(); render();
       k.logActivity("mengganti foto desain baju");
-      k.toast("Foto baju diperbarui.");
+      k.toast("Foto baju diperbarui (perangkat ini saja).");
     };
     r.readAsDataURL(file);
   }
@@ -154,9 +175,15 @@
     document.getElementById("shirtRemoveBtn").addEventListener("click", function () {
       if (!k.requireAdmin()) return;
       if (!k.state.shirt.photo) { k.toast("Belum ada foto.", "err"); return; }
-      k.askConfirm("Hapus foto baju?", "Preview desain akan dihapus dari perangkat ini.", "Hapus", function () {
+      k.askConfirm("Hapus foto baju?", "Foto desain akan dihapus dari semua perangkat.", "Hapus", function () {
+        var C = window.KasKitaCloud;
+        var old = k.state.shirt.photo;
         k.state.shirt.photo = null;
         k.save(); render();
+        if (C && C.enabled()) {
+          C.removeShirtPhoto(old).catch(function () {});
+          k.logActivity("menghapus foto desain baju");
+        }
         k.toast("Foto baju dihapus.");
       });
     });

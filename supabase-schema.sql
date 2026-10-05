@@ -52,8 +52,12 @@ create table if not exists shirt_paid (
 create table if not exists shirt_project (
   id integer primary key,
   name text,
-  price integer
+  price integer,
+  photo_url text
 );
+
+-- kolom foto untuk database lama + foto bawaan dari perangkat lama ikut pindah saat pertama sync
+alter table shirt_project add column if not exists photo_url text;
 
 create table if not exists activities (
   id text primary key,
@@ -131,6 +135,20 @@ on conflict (email) do update set name = excluded.name, role = excluded.role;
 
 insert into shirt_project (id, name, price) values (1, 'Baju Angkatan 2026', 75000)
 on conflict (id) do nothing;
+
+-- ============ STORAGE foto baju (tampil di semua perangkat) ============
+insert into storage.buckets (id, name, public) values ('shirt-photos', 'shirt-photos', true)
+on conflict (id) do update set public = true;
+
+-- baca publik (agar foto tampil tanpa login), tulis/hapus khusus admin login
+drop policy if exists shirt_public_read on storage.objects;
+create policy shirt_public_read on storage.objects for select using (bucket_id = 'shirt-photos');
+drop policy if exists shirt_admin_insert on storage.objects;
+create policy shirt_admin_insert on storage.objects for insert to authenticated with check (bucket_id = 'shirt-photos');
+drop policy if exists shirt_admin_update on storage.objects;
+create policy shirt_admin_update on storage.objects for update to authenticated using (bucket_id = 'shirt-photos') with check (bucket_id = 'shirt-photos');
+drop policy if exists shirt_admin_delete on storage.objects;
+create policy shirt_admin_delete on storage.objects for delete to authenticated using (bucket_id = 'shirt-photos');
 
 -- ============ REALTIME: perubahan langsung tampil di semua perangkat ============
 -- dibungkus DO agar aman di-run ulang (tabel yang sudah terdaftar dilewati)
