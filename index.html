@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="KasKita, Sistem Kas dan Pembuatan Baju Gabungan. Dashboard kas kelas yang modern dan mudah digunakan.">
+<title>KasKita, Sistem Kas &amp; Pembuatan Baju</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563EB'/%3E%3Ctext x='16' y='22' font-family='Arial' font-size='18' font-weight='bold' fill='white' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<a class="skip-link" href="#mainContent">Lewati ke konten utama</a>
+
+<!-- ============ LOGIN VIEW ============ -->
+<div id="loginView" class="login-wrap">
+  <div class="login-card page-enter" role="main" aria-labelledby="loginTitle">
+    <div class="login-brand">
+      <div class="login-logo" aria-hidden="true">K</div>
+      <div>
+        <h1 id="loginTitle" class="login-title">KasKita</h1>
+        <p class="login-sub">Sistem Kas &amp; Pembuatan Baju</p>
+      </div>
+    </div>
+    <p class="login-desc">Masuk sebagai admin untuk mengelola kas, peserta, dan dana baju. Pengunjung bisa melihat data tanpa login.</p>
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="loginUser">Email admin</label>
+        <input id="loginUser" name="username" type="email" autocomplete="username" placeholder="cth: rayhan@gmail.com" required>
+        <small class="field-err" id="loginUserErr" hidden>Isi email dulu.</small>
+      </div>
+      <div class="field">
+        <label for="loginPass">Password</label>
+        <input id="loginPass" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+        <small class="field-err" id="loginPassErr" hidden>Isi password dulu.</small>
+      </div>
+      <small class="field-err form-err" id="loginErr" hidden role="alert"></small>
+      <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Masuk sebagai Admin</button>
+      <button type="button" class="btn btn-ghost btn-block" id="loginBack" hidden>Kembali lihat data</button>
+    </form>
+  </div>
+  <p class="login-foot">KasKita v1.0 &middot; Frontend only &middot; Data tersimpan di perangkat ini</p>
+</div>
+
+<!-- ============ APP VIEW ============ -->
+<div id="appView" class="app" hidden>
+
+  <!-- Sidebar (desktop / tablet) -->
+  <aside class="sidebar" aria-label="Navigasi utama">
+    <div class="side-brand">
+      <div class="side-logo" aria-hidden="true">K</div>
+      <div>
+        <p class="side-name">KasKita</p>
+        <p class="side-sub">Kas &amp; Baju Gabungan</p>
+      </div>
+    </div>
+    <nav class="side-nav" id="sideNav">
+      <button class="nav-item is-active" data-nav="dashboard" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-nav="peserta">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M16 15.2c2.4.3 4.3 1.7 5 4.3"/></svg>
+        <span>Data Peserta</span>
+      </button>
+      <button class="nav-item" data-nav="kas">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="2.6"/><path d="M6 9.5h.01M18 15.5h.01"/></svg>
+        <span>Pembayaran Kas</span>
+      </button>
+      <button class="nav-item" data-nav="baju">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3 3.5 6.5 6 11l2.5-.8V21h7v-10.8L18 11l2.5-4.5L15 3a3 3 0 0 1-6 0Z"/></svg>
+        <span>Pembuatan Baju</span>
+      </button>
+      <button class="nav-item" data-nav="aktivitas">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5l3.5 2"/><circle cx="12" cy="12" r="9"/></svg>
+        <span>Aktivitas</span>
+      </button>
+      <button class="nav-item needs-admin" data-nav="pengaturan">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95A7 7 0 0 0 14 5.1L13.7 2.6h-3.4L10 5.1a7 7 0 0 0-2.5 1.44l-2.36-.95-2 3.46 2 1.55a7 7 0 0 0 0 2.8l-2 1.55 2 3.46 2.36-.95a7 7 0 0 0 2.5 1.44l.3 2.5h3.4l.3-2.5a7 7 0 0 0 2.5-1.44l2.36.95 2-3.46-2-1.55c.1-.46.14-.93.14-1.4Z"/></svg>
+        <span>Pengaturan</span>
+      </button>
+    </nav>
+    <div class="side-foot">
+      <div class="side-user only-admin">
+        <div class="avatar" id="sideAvatar" aria-hidden="true">A</div>
+        <div class="side-user-meta">
+          <p class="side-user-name" id="sideUserName">Tamu</p>
+          <p class="side-user-role" id="sideUserRole">TAMU</p>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" id="loginBtnSide" type="button">Login Admin</button>
+      <button class="btn btn-ghost btn-block only-admin" id="logoutBtnSide" type="button">Keluar</button>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <!-- Topbar (glass) -->
+    <header class="topbar" role="banner">
+      <div class="topbar-left">
+        <div class="topbar-brand">
+          <p class="topbar-title">KasKita</p>
+          <p class="topbar-sub">Sistem Kas &amp; Pembuatan Baju</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" id="notifBtn" type="button" aria-label="Notifikasi, 3 belum dibaca" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+          <span class="dot" id="notifDot" aria-hidden="true"></span>
+        </button>
+        <div class="notif-pop" id="notifPop" hidden role="status" aria-label="Notifikasi terbaru">
+          <p class="notif-pop-title">Notifikasi</p>
+          <ul id="notifList" class="notif-list"></ul>
+        </div>
+        <div class="profile-chip only-admin">
+          <div class="avatar avatar-sm" id="topAvatar" aria-hidden="true">T</div>
+          <div class="profile-meta">
+            <p class="profile-name" id="topUserName">Tamu</p>
+            <p class="profile-role"><span class="role-badge" id="topUserRole">TAMU</span></p>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="loginBtnTop" type="button">Login</button>
+        <button class="icon-btn" id="logoutBtnTop" type="button" aria-label="Keluar dari akun admin" title="Keluar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h-8v16h8M10 12h11M18 8l3 4-3 4"/></svg>
+        </button>
+        <button class="icon-btn only-mobile" id="mobileMenuBtn" type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="mobileSheet">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="mainContent" class="content" tabindex="-1">
+
+      <!-- DASHBOARD -->
+      <section id="view-dashboard" class="view is-active" aria-labelledby="dashTitle">
+        <div class="page-head">
+          <div>
+            <h2 id="dashTitle" class="page-title">Halo, <span id="greetName">Tamu</span></h2>
+            <p class="page-sub" id="dashDate">Ringkasan kas dan baju hari ini.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" type="button" data-goto="baju">Lihat Baju</button>
+            <button class="btn btn-primary" type="button" data-action="add-payment">+ Catat Kas</button>
+          </div>
+        </div>
+
+        <div class="stat-grid" id="statGrid">
+          <article class="stat stat-feature">
+            <p class="stat-label">Total Kas Terkumpul</p>
+            <p class="stat-value" id="statTotalKas">Rp0</p>
+            <p class="stat-meta" id="statKasMeta">0 transaksi</p>
+            <div class="stat-bar"><span id="statKasBar" style="width:0%"></span></div>
+          </article>
+          <article class="stat">
+            <p class="stat-label">Peserta</p>
+            <p class="stat-value" id="statPeserta">0</p>
+            <p class="stat-meta">orang terdaftar</p>
+          </article>
+          <article class="stat stat-ok">
+            <p class="stat-label">Sudah Bayar</p>
+            <p class="stat-value" id="statSudah">0</p>
+            <p class="stat-meta" id="statSudahMeta">0% dari peserta</p>
+          </article>
+          <article class="stat stat-warn">
+            <p class="stat-label">Sedang Bayar</p>
+            <p class="stat-value" id="statBelum">0</p>
+            <p class="stat-meta">masih mencicil</p>
+          </article>
+          <article class="stat">
+            <p class="stat-label">Dana Baju</p>
+            <p class="stat-value" id="statDanaBaju">Rp0</p>
+            <p class="stat-meta" id="statDanaMeta">dari Rp0</p>
+          </article>
+          <article class="stat">
+            <p class="stat-label">Target Baju</p>
+            <p class="stat-value" id="statTargetBaju">Rp0</p>
+            <p class="stat-meta" id="statTargetMeta">otomatis per peserta</p>
+          </article>
+        </div>
+
+        <div class="dash-cols">
+          <article class="panel">
+            <div class="panel-head">
+              <h3 class="panel-title">Pembayaran terakhir</h3>
+              <button class="link-btn" type="button" data-goto="kas">Lihat semua</button>
+            </div>
+            <ul class="recent-list" id="recentList"></ul>
+          </article>
+          <article class="panel">
+            <div class="panel-head">
+              <h3 class="panel-title">Progres baju</h3>
+              <button class="link-btn" type="button" data-goto="baju">Detail</button>
+            </div>
+            <div class="shirt-mini">
+              <div class="progress progress-lg" role="progressbar" aria-label="Progres dana baju" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="dashProgressWrap">
+                <span id="dashProgressBar" style="width:0%"></span>
+              </div>
+              <p class="shirt-mini-text"><strong id="dashProgressPct">0%</strong> &middot; <span id="dashProgressText">Kurang Rp0</span></p>
+              <div class="size-dist" id="sizeDist"></div>
+            </div>
+            <div class="panel-head panel-head-sm">
+              <h3 class="panel-title">Aktivitas terbaru</h3>
+              <button class="link-btn" type="button" data-goto="aktivitas">Semua</button>
+            </div>
+            <ul class="mini-activity" id="dashActivity"></ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- PESERTA -->
+      <section id="view-peserta" class="view" aria-labelledby="pesertaTitle" hidden>
+        <div class="page-head">
+          <div>
+            <h2 id="pesertaTitle" class="page-title">Data Peserta</h2>
+            <p class="page-sub">Kelola nama, ukuran baju, dan status kas tiap anggota.</p>
+          </div>
+          <button class="btn btn-primary" type="button" data-action="add-participant">+ Tambah Peserta</button>
+        </div>
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="pesertaSearch" placeholder="Cari nama peserta..." aria-label="Cari nama peserta">
+          </div>
+          <select id="pesertaCatFilter" aria-label="Filter kategori ukuran">
+            <option value="">Semua kategori</option>
+            <option value="dewasa">Dewasa</option>
+            <option value="anak">Anak-anak</option>
+          </select>
+          <select id="pesertaSizeFilter" aria-label="Filter ukuran baju">
+            <option value="">Semua ukuran</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" type="button" data-action="size-guide">Panduan ukuran</button>
+          <button class="btn btn-secondary btn-sm" type="button" data-action="export-peserta">Unduh CSV</button>
+          <select id="pesertaStatusFilter" aria-label="Filter status">
+            <option value="">Semua status</option>
+            <option value="aktif">Aktif</option>
+            <option value="nonaktif">Nonaktif</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" type="button" id="dlPesertaBtn">Unduh CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table" id="pesertaTable">
+            <thead><tr><th scope="col">No</th><th scope="col">Nama</th><th scope="col">Ukuran</th><th scope="col" class="num">Total Kas</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Aksi</span></th></tr></thead>
+            <tbody id="pesertaBody"></tbody>
+          </table>
+          <div class="empty" id="pesertaEmpty" hidden>
+            <p class="empty-title">Belum ada peserta</p>
+            <p class="empty-sub">Tambah peserta dulu, misalnya Adam, lalu catat kasnya.</p>
+            <button class="btn btn-primary" type="button" data-action="add-participant">+ Tambah Peserta</button>
+          </div>
+        </div>
+
+        <article class="panel size-panel">
+          <div class="panel-head">
+            <h3 class="panel-title">Rekap Ukuran Baju</h3>
+          </div>
+          <div class="table-wrap table-wrap-flat">
+            <table class="table" id="sizeTable">
+              <thead><tr><th scope="col">Ukuran</th><th scope="col" class="num">Jumlah Peserta</th></tr></thead>
+              <tbody id="sizeBody"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <!-- KAS -->
+      <section id="view-kas" class="view" aria-labelledby="kasTitle" hidden>
+        <div class="page-head">
+          <div>
+            <h2 id="kasTitle" class="page-title">Pembayaran Kas</h2>
+            <p class="page-sub">Pemasukan dari peserta dan pengeluaran tercatat terpisah, saldo dihitung otomatis.</p>
+          </div>
+          <button class="btn btn-primary" type="button" data-action="add-payment">+ Tambah Pemasukan</button>
+        </div>
+        <div class="kas-saldo" aria-label="Ringkasan kas">
+          <div><p class="kas-summary-label light">Masuk</p><p class="kas-saldo-in" id="kasInTotal">Rp0</p></div>
+          <span class="kas-saldo-op" aria-hidden="true">−</span>
+          <div><p class="kas-summary-label light">Keluar</p><p class="kas-saldo-out" id="kasOutTotal">Rp0</p></div>
+          <span class="kas-saldo-op" aria-hidden="true">=</span>
+          <div><p class="kas-summary-label light">Saldo</p><p class="kas-saldo-val" id="kasSaldo">Rp0</p></div>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Jenis kas">
+          <button class="tab is-active" type="button" id="tab-kas-in" data-kastab="in" role="tab" aria-selected="true" aria-controls="panel-kas-in">Pemasukan</button>
+          <button class="tab" type="button" id="tab-kas-out" data-kastab="out" role="tab" aria-selected="false" aria-controls="panel-kas-out">Pengeluaran</button>
+        </div>
+        <div id="panel-kas-in" role="tabpanel" aria-labelledby="tab-kas-in">
+        <div class="kas-summary">
+          <div>
+            <p class="kas-summary-label">Total Pemasukan</p>
+            <p class="kas-summary-value" id="kasGrandTotal">Rp0</p>
+          </div>
+          <p class="kas-summary-meta" id="kasSummaryMeta">0 transaksi</p>
+        </div>
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="kasSearch" placeholder="Cari nama peserta..." aria-label="Cari pembayaran">
+          </div>
+          <select id="kasSort" aria-label="Urutkan">
+            <option value="total-desc">Total terbesar</option>
+            <option value="total-asc">Total terkecil</option>
+            <option value="name-asc">Nama A-Z</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" type="button" id="dlKasInBtn">Unduh CSV</button>
+          <button class="btn btn-secondary btn-sm" type="button" data-action="export-kas-in">Unduh CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table" id="kasTable">
+            <thead><tr><th scope="col">No</th><th scope="col">Nama</th><th scope="col">Riwayat</th><th scope="col" class="num">Total</th></tr></thead>
+            <tbody id="kasBody"></tbody>
+          </table>
+          <div class="empty" id="kasEmpty" hidden>
+            <p class="empty-title">Belum ada pemasukan</p>
+            <p class="empty-sub">Setoran peserta yang ditambahkan akan muncul di sini.</p>
+            <button class="btn btn-primary" type="button" data-action="add-payment">+ Tambah Pemasukan</button>
+          </div>
+        </div>
+        </div>
+        <div id="panel-kas-out" role="tabpanel" aria-labelledby="tab-kas-out" hidden>
+          <div class="kas-summary kas-summary-out">
+            <div>
+              <p class="kas-summary-label">Total Pengeluaran</p>
+              <p class="kas-summary-value" id="expGrandTotal">Rp0</p>
+            </div>
+            <p class="kas-summary-meta" id="expSummaryMeta">0 pengeluaran</p>
+          </div>
+          <div class="toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="expSearch" placeholder="Cari pengeluaran..." aria-label="Cari pengeluaran">
+          </div>
+          <button class="btn btn-secondary btn-sm" type="button" id="dlKasOutBtn">Unduh CSV</button>
+          <button class="btn btn-primary btn-sm" type="button" data-action="add-expense">+ Catat Pengeluaran</button>
+          </div>
+          <div class="table-wrap">
+            <table class="table" id="expTable">
+              <thead><tr><th scope="col">No</th><th scope="col">Keterangan</th><th scope="col">Tanggal</th><th scope="col" class="num">Nominal</th><th scope="col"><span class="sr-only">Aksi</span></th></tr></thead>
+              <tbody id="expBody"></tbody>
+            </table>
+            <div class="empty" id="expEmpty" hidden>
+              <p class="empty-title">Belum ada pengeluaran</p>
+              <p class="empty-sub">Pengeluaran yang dicatat akan muncul di sini dan mengurangi saldo.</p>
+              <button class="btn btn-primary" type="button" data-action="add-expense">+ Catat Pengeluaran</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BAJU -->
+      <section id="view-baju" class="view" aria-labelledby="bajuTitle" hidden>
+        <div class="page-head">
+          <div>
+            <h2 id="bajuTitle" class="page-title">Pembuatan Baju</h2>
+            <p class="page-sub">Desain, target dana, dan setoran tiap peserta. Setoran mengikuti catatan kas secara otomatis.</p>
+          </div>
+        </div>
+
+        <div class="shirt-layout">
+          <article class="panel shirt-photo-panel">
+            <div class="shirt-photo" id="shirtDrop" tabindex="0" role="button" aria-label="Unggah foto desain baju. Tekan Enter untuk memilih file.">
+              <img id="shirtImg" alt="Desain Baju Angkatan 2026" hidden>
+              <div class="shirt-placeholder" id="shirtPlaceholder">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m5 18 5-5 3 3 3-3 3 3"/></svg>
+                <p><strong>Tarik &amp; letakkan foto di sini</strong></p>
+                <p class="muted">atau klik untuk memilih dari perangkat</p>
+              </div>
+              <input type="file" id="shirtFile" accept="image/*" hidden aria-label="Pilih foto baju">
+            </div>
+            <div class="shirt-photo-actions">
+              <button class="btn btn-secondary btn-sm" type="button" id="shirtChangeBtn">Ganti foto</button>
+              <button class="btn btn-ghost btn-sm danger" type="button" id="shirtRemoveBtn">Hapus foto</button>
+            </div>
+            <p class="muted small">Preview tersimpan lokal, tidak diunggah ke server.</p>
+          </article>
+
+          <article class="panel shirt-info">
+            <h3 class="shirt-name" id="shirtName">Baju Angkatan 2026</h3>
+            <p class="shirt-formula" id="shirtFormula">Rp75.000 &times; 10 = Rp750.000</p>
+            <dl class="shirt-stats">
+              <div><dt>Target</dt><dd id="shirtTarget">Rp0</dd></div>
+              <div><dt>Terkumpul</dt><dd id="shirtCollected">Rp0</dd></div>
+              <div><dt>Kekurangan</dt><dd id="shirtShort">Rp0</dd></div>
+            </dl>
+            <div class="progress progress-lg" role="progressbar" aria-label="Progres dana baju" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="shirtProgressWrap">
+              <span id="shirtProgressBar" style="width:0%"></span>
+            </div>
+            <p class="progress-text"><strong id="shirtPct">0%</strong> &middot; <span id="shirtState">Kurang Rp0</span></p>
+            <p class="muted small">Harga per orang: <strong id="shirtPriceLabel">Rp75.000</strong> &middot; <span id="shirtCountLabel">10 orang</span></p>
+          </article>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="bajuSearch" placeholder="Cari peserta baju..." aria-label="Cari peserta baju">
+          </div>
+          <select id="bajuCatFilter" aria-label="Filter kategori ukuran">
+            <option value="">Semua kategori</option>
+            <option value="dewasa">Dewasa</option>
+            <option value="anak">Anak-anak</option>
+          </select>
+          <select id="bajuStatusFilter" aria-label="Filter status baju">
+            <option value="">Semua status</option>
+            <option value="lunas">Lunas</option>
+            <option value="sebagian">Sebagian</option>
+            <option value="sedang">Sedang bayar</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" type="button" id="dlBajuBtn">Unduh CSV</button>
+          <button class="btn btn-secondary btn-sm" type="button" data-action="size-guide">Panduan ukuran</button>
+          <button class="btn btn-secondary btn-sm" type="button" data-action="export-baju">Unduh CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table" id="bajuTable">
+            <thead><tr><th scope="col">No</th><th scope="col">Nama</th><th scope="col">Ukuran</th><th scope="col" class="num">Target</th><th scope="col" class="num">Dibayar</th><th scope="col">Status</th></tr></thead>
+            <tbody id="bajuBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- AKTIVITAS -->
+      <section id="view-aktivitas" class="view" aria-labelledby="actTitle" hidden>
+        <div class="page-head">
+          <div>
+            <h2 id="actTitle" class="page-title">Aktivitas</h2>
+            <p class="page-sub" id="actSub">Jejak transaksi dan perubahan yang dilakukan admin.</p>
+          </div>
+        </div>
+        <div class="toolbar">
+          <select id="actFilter" aria-label="Filter admin">
+            <option value="">Semua admin</option>
+            <option value="Rayhan">Rayhan</option>
+            <option value="Alfi">Alfi</option>
+            <option value="Naufal">Naufal</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" type="button" data-action="export-aktivitas">Unduh CSV</button>
+          <button class="btn btn-secondary btn-sm" type="button" id="dlActBtn">Unduh CSV</button>
+          <button class="btn btn-ghost btn-sm danger" type="button" id="actClearBtn">Hapus riwayat</button>
+        </div>
+        <ol class="timeline" id="activityList"></ol>
+        <div class="empty" id="activityEmpty" hidden>
+          <p class="empty-title">Belum ada aktivitas</p>
+          <p class="empty-sub">Setiap tambah, edit, atau hapus akan tercatat di sini.</p>
+        </div>
+      </section>
+
+      <!-- PENGATURAN -->
+      <section id="view-pengaturan" class="view" aria-labelledby="setTitle" hidden>
+        <div class="page-head">
+          <div>
+            <h2 id="setTitle" class="page-title">Pengaturan</h2>
+            <p class="page-sub">Profil, proyek baju, dan akun. Menu sensitif mengikuti role.</p>
+          </div>
+        </div>
+        <div class="set-grid">
+          <article class="panel">
+            <h3 class="panel-title">Profil saya</h3>
+            <div class="profile-big">
+              <div class="avatar avatar-lg" id="setAvatar">T</div>
+              <div><p class="profile-big-name" id="setName">Tamu</p><p class="muted"><span class="role-badge" id="setRole">TAMU</span> &middot; <span id="setUser">-</span></p></div>
+            </div>
+            <div class="row">
+              <button class="btn btn-primary" type="button" id="loginBtnMain">Login sebagai Admin</button>
+              <button class="btn btn-ghost" type="button" id="logoutBtnMain">Keluar dari akun</button>
+            </div>
+          </article>
+          <article class="panel">
+            <h3 class="panel-title">Proyek baju</h3>
+            <form id="shirtSettingsForm">
+              <div class="field"><label for="setShirtName">Nama proyek</label><input id="setShirtName" type="text" maxlength="60"></div>
+              <div class="field"><label for="setShirtPrice">Harga per orang (Rp)</label><input id="setShirtPrice" type="number" min="1000" step="500"></div>
+              <button class="btn btn-primary" type="submit">Simpan proyek</button>
+            </form>
+          </article>
+          <article class="panel" id="cloudPanel">
+            <h3 class="panel-title">Koneksi Cloud</h3>
+            <p class="muted small" id="cloudStatus">Mode lokal: data hanya di perangkat ini.</p>
+            <form id="cloudForm">
+              <div class="field"><label for="cloudUrl">Project URL</label><input id="cloudUrl" type="url" placeholder="https://xyz.supabase.co" autocomplete="off"></div>
+              <div class="field"><label for="cloudKey">Anon key</label><input id="cloudKey" type="text" placeholder="tempel anon key" autocomplete="off"></div>
+              <div class="row">
+                <button class="btn btn-primary btn-sm" type="submit">Sambungkan</button>
+                <button class="btn btn-secondary btn-sm" type="button" id="cloudTest">Tes koneksi</button>
+                <button class="btn btn-ghost btn-sm danger" type="button" id="cloudDisconnect">Putuskan</button>
+              </div>
+            </form>
+            <p class="muted small">Saat tersambung, data dan riwayat sama di semua perangkat dan update otomatis. Foto baju tetap lokal per perangkat.</p>
+            <p class="muted small">Deploy (GitHub/Cloudflare Pages): isi URL &amp; key sekali di <code>js/supabase-config.js</code> agar semua pengunjung otomatis tersambung.</p>
+          </article>
+          <article class="panel" id="accountsPanel">
+            <div class="panel-head">
+              <h3 class="panel-title">Kelola akun admin</h3>
+              <div class="row">
+                <span class="role-badge">SUPER ADMIN</span>
+                <button class="btn btn-primary btn-sm" type="button" id="addAccountBtn">+ Tambah Akun</button>
+              </div>
+            </div>
+            <p class="muted small" id="accountsNote">Hanya Super Admin yang bisa melihat siapa memasukkan pembayaran dan mengelola akun.</p>
+            <ul class="acct-list" id="accountsList"></ul>
+          </article>
+          <article class="panel">
+            <h3 class="panel-title">Backup Data</h3>
+            <p class="muted small">Unduh salinan seluruh data dan riwayat (JSON) sebagai arsip.</p>
+            <div class="row">
+              <button class="btn btn-secondary btn-sm" type="button" id="exportBtn">Unduh backup (JSON)</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Bottom nav (mobile) -->
+  <nav class="bottom-nav" aria-label="Navigasi bawah">
+    <button class="bnav-item is-active" data-nav="dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Home</span></button>
+    <button class="bnav-item" data-nav="peserta"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/></svg><span>Peserta</span></button>
+    <button class="bnav-fab" data-action="add-payment" aria-label="Tambah pembayaran"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="bnav-item" data-nav="kas"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="2.6"/></svg><span>Kas</span></button>
+    <button class="bnav-item" data-nav="baju"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3 3.5 6.5 6 11l2.5-.8V21h7v-10.8L18 11l2.5-4.5L15 3a3 3 0 0 1-6 0Z"/></svg><span>Baju</span></button>
+  </nav>
+
+  <!-- Mobile sheet -->
+  <div class="sheet-backdrop" id="mobileSheet" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="Menu lainnya">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <button class="sheet-item" data-nav="aktivitas"><span>Aktivitas</span></button>
+      <button class="sheet-item" data-nav="pengaturan"><span>Pengaturan</span></button>
+      <button class="sheet-item" id="loginBtnSheet"><span>Login Admin</span></button>
+      <button class="sheet-item" id="logoutBtnSheet"><span>Keluar</span></button>
+      <button class="btn btn-ghost btn-block" type="button" id="sheetClose">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <!-- Participant -->
+  <div class="modal" id="modal-participant" role="dialog" aria-modal="true" aria-labelledby="mpTitle" hidden>
+    <div class="modal-head"><h3 id="mpTitle">Tambah Peserta</h3><button class="icon-btn" type="button" data-close aria-label="Tutup">✕</button></div>
+    <form id="participantForm" novalidate>
+      <input type="hidden" id="pId">
+      <div class="field"><label for="pName">Nama peserta</label><input id="pName" type="text" maxlength="40" placeholder="cth: Adam" required><small class="field-err" id="pNameErr" hidden>Nama minimal 2 huruf.</small></div>
+      <div class="field">
+        <span class="field-label" id="pCatLabel">Kategori ukuran</span>
+        <div class="size-pills" role="radiogroup" aria-labelledby="pCatLabel" id="pCatPills">
+          <label><input type="radio" name="pcat" value="dewasa" checked><span>Dewasa</span></label>
+          <label><input type="radio" name="pcat" value="anak"><span>Anak-anak</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="field-label" id="pSizeLabel">Ukuran baju</span>
+        <div class="size-pills" role="radiogroup" aria-labelledby="pSizeLabel" id="pSizePills"></div>
+        <p class="muted small" id="pSizeDetail"></p>
+        <button class="link-btn" type="button" data-action="size-guide">Lihat panduan ukuran</button>
+      </div>
+      <div class="field"><label class="check"><input type="checkbox" id="pActive" checked> Peserta aktif</label></div>
+      <div class="modal-foot"><button class="btn btn-ghost" type="button" data-close>Batal</button><button class="btn btn-primary" type="submit" id="pSaveBtn">Simpan</button></div>
+    </form>
+  </div>
+  <!-- Payment -->
+  <div class="modal" id="modal-payment" role="dialog" aria-modal="true" aria-labelledby="mpayTitle" hidden>
+    <div class="modal-head"><h3 id="mpayTitle">Tambah Pembayaran</h3><button class="icon-btn" type="button" data-close aria-label="Tutup">✕</button></div>
+    <form id="paymentForm" novalidate>
+      <input type="hidden" id="payId">
+      <div class="field"><label for="payUser">Nama peserta</label><select id="payUser"></select></div>
+      <div class="field"><label for="payAmount">Nominal (Rp)</label><input id="payAmount" type="number" min="1000" step="500" placeholder="cth: 5000" required><small class="field-err" id="payAmountErr" hidden>Nominal minimal Rp1.000.</small></div>
+      <div class="field"><label for="payDate">Tanggal</label><input id="payDate" type="date" required></div>
+      <div class="field"><label for="payNote">Catatan (opsional)</label><input id="payNote" type="text" maxlength="80" placeholder="cth: kas minggu pertama"></div>
+      <div class="modal-foot"><button class="btn btn-ghost" type="button" data-close>Batal</button><button class="btn btn-primary" type="submit">Simpan</button></div>
+    </form>
+  </div>
+  <!-- Expense -->
+  <div class="modal" id="modal-expense" role="dialog" aria-modal="true" aria-labelledby="mxTitle" hidden>
+    <div class="modal-head"><h3 id="mxTitle">Catat Pengeluaran</h3><button class="icon-btn" type="button" data-close aria-label="Tutup">✕</button></div>
+    <form id="expenseForm" novalidate>
+      <input type="hidden" id="xId">
+      <div class="field"><label for="xTitle">Keterangan</label><input id="xTitle" type="text" maxlength="60" placeholder="cth: beli konsumsi rapat" required><small class="field-err" id="xTitleErr" hidden>Isi keterangan dulu.</small></div>
+      <div class="field"><label for="xAmount">Nominal (Rp)</label><input id="xAmount" type="number" min="1000" step="500" placeholder="cth: 25000" required><small class="field-err" id="xAmountErr" hidden>Nominal minimal Rp1.000.</small></div>
+      <div class="field"><label for="xDate">Tanggal</label><input id="xDate" type="date" required></div>
+      <div class="field"><label for="xNote">Catatan (opsional)</label><input id="xNote" type="text" maxlength="80" placeholder="cth: nota ada di bendahara"></div>
+      <div class="modal-foot"><button class="btn btn-ghost" type="button" data-close>Batal</button><button class="btn btn-primary" type="submit">Simpan</button></div>
+    </form>
+  </div>
+  <!-- History -->
+  <div class="modal modal-lg" id="modal-history" role="dialog" aria-modal="true" aria-labelledby="mhTitle" hidden>
+    <div class="modal-head"><h3 id="mhTitle">Riwayat</h3><button class="icon-btn" type="button" data-close aria-label="Tutup">✕</button></div>
+    <div class="table-wrap table-wrap-inmodal">
+      <table class="table">
+        <thead><tr><th scope="col">Tanggal</th><th scope="col" class="num">Nominal</th><th scope="col">Admin</th><th scope="col"><span class="sr-only">Aksi</span></th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+      <div class="empty" id="historyEmpty" hidden><p class="empty-title">Belum ada transaksi</p></div>
+    </div>
+    <div class="modal-total">Total: <strong id="historyTotal">Rp0</strong></div>
+  </div>
+  <!-- Size guide -->
+  <div class="modal modal-lg" id="modal-guide" role="dialog" aria-modal="true" aria-labelledby="mgTitle" hidden>
+    <div class="modal-head"><h3 id="mgTitle">Panduan Ukuran Baju</h3><button class="icon-btn" type="button" data-close aria-label="Tutup">✕</button></div>
+    <p class="modal-desc">Satuan centimeter (cm). Pilih kategori Dewasa atau Anak-anak saat tambah peserta.</p>
+    <h4 class="guide-h">Dewasa — Lebar &times; Panjang &times; Lebar Dada</h4>
+    <div class="table-wrap table-wrap-inmodal">
+      <table class="table">
+        <thead><tr><th scope="col">Ukuran</th><th scope="col" class="num">Lebar</th><th scope="col" class="num">Panjang</th><th scope="col" class="num">Lebar Dada</th></tr></thead>
+        <tbody id="guideDewasaBody"></tbody>
+      </table>
+    </div>
+    <h4 class="guide-h">Anak-anak — Lebar &times; Panjang</h4>
+    <div class="table-wrap table-wrap-inmodal">
+      <table class="table">
+        <thead><tr><th scope="col">Ukuran</th><th scope="col" class="num">Lebar</th><th scope="col" class="num">Panjang</th><th scope="col">Usia</th></tr></thead>
+        <tbody id="guideAnakBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Account -->
+  <div class="modal" id="modal-account" role="dialog" aria-modal="true" aria-labelledby="maTitle" hidden>
+    <div class="modal-head"><h3 id="maTitle">Tambah Akun</h3><button class="icon-btn" type="button" data-close aria-label="Tutup">✕</button></div>
+    <form id="accountForm" novalidate>
+      <input type="hidden" id="accMode" value="create">
+      <div class="field"><label for="accName">Nama</label><input id="accName" type="text" maxlength="40" placeholder="cth: Budi" required></div>
+      <div class="field"><label for="accEmail">Email</label><input id="accEmail" type="email" maxlength="80" placeholder="cth: budi@gmail.com" required></div>
+      <div class="field" id="accPassWrap"><label for="accPass">Password</label><input id="accPass" type="text" maxlength="60" placeholder="minimal 6 karakter" autocomplete="off"><small class="muted small">Berikan password ini ke pemilik akun.</small></div>
+      <div class="field"><label for="accRole">Role</label>
+        <select id="accRole"><option value="ADMIN">ADMIN</option><option value="SUPER ADMIN">SUPER ADMIN</option></select>
+      </div>
+      <div class="field">
+        <span class="field-label">Boleh mengakses</span>
+        <div class="perm-list">
+          <label class="check"><input type="checkbox" name="accperm" value="peserta" checked> Data Peserta</label>
+          <label class="check"><input type="checkbox" name="accperm" value="kas" checked> Pembayaran Kas</label>
+          <label class="check"><input type="checkbox" name="accperm" value="baju" checked> Pembuatan Baju</label>
+          <label class="check"><input type="checkbox" name="accperm" value="aktivitas" checked> Aktivitas</label>
+          <label class="check"><input type="checkbox" name="accperm" value="pengaturan" checked> Pengaturan</label>
+        </div>
+      </div>
+      <small class="field-err form-err" id="accErr" hidden role="alert"></small>
+      <div class="modal-foot"><button class="btn btn-ghost" type="button" data-close>Batal</button><button class="btn btn-primary" type="submit" id="accSaveBtn">Buat Akun</button></div>
+    </form>
+  </div>
+  <!-- Confirm -->
+  <div class="modal modal-sm" id="modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="mcTitle" aria-describedby="mcDesc" hidden>
+    <div class="modal-head"><h3 id="mcTitle">Hapus?</h3></div>
+    <p class="modal-desc" id="mcDesc">Yakin ingin menghapus?</p>
+    <div class="modal-foot"><button class="btn btn-ghost" type="button" data-close>Batal</button><button class="btn btn-danger" type="button" id="confirmYes">Hapus</button></div>
+  </div>
+</div>
+
+<div class="toast-root" id="toastRoot" aria-live="polite" aria-atomic="false"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/cloud.js"></script>
+<script src="js/sizes.js"></script>
+<script src="js/app.js"></script>
+<script src="js/participants.js"></script>
+<script src="js/payments.js"></script>
+<script src="js/shirts.js"></script>
+<script src="js/export.js"></script>
+</body>
+</html>

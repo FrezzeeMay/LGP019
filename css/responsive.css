@@ -1,0 +1,79 @@
+/* KasKita responsive.css: mobile-first, tumbuh dari kecil ke besar. */
+
+/* Basis sudah mobile. Bottom nav + topbar ringkas aktif di semua ukuran kecil. */
+.bottom-nav{
+  display:flex;position:fixed;bottom:0;left:0;right:0;z-index:70;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+  border-top:1px solid var(--line);
+  padding:6px 8px calc(8px + env(safe-area-inset-bottom));
+  align-items:center;justify-content:space-around;gap:2px;
+}
+.bnav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;
+  background:none;border:0;font-size:11px;font-weight:600;color:var(--muted);
+  min-height:52px;min-width:56px;justify-content:center;border-radius:10px;cursor:pointer;
+}
+.bnav-item svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bnav-item.is-active{color:var(--primary)}
+.bnav-fab{
+  width:54px;height:54px;border-radius:50%;background:var(--primary);color:#fff;border:4px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-top:-26px;
+  box-shadow:0 6px 18px rgba(37,99,235,.4);
+}
+.bnav-fab svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round}
+.bnav-fab:active{opacity:.88}
+
+/* Sidebar disembunyikan di mobile, muncul sebagai drawer tidak dipakai:
+   kami pakai bottom-nav + sheet agar satu tangan mudah menjangkau. */
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .only-mobile{display:inline-flex}
+  .profile-chip .profile-meta{display:none}
+  .profile-chip{padding:5px;border-radius:50%}
+  .content{padding:16px 14px 120px}
+  .page-title{font-size:20px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .stat-feature{grid-column:1/-1}
+  .stat-feature .stat-value{font-size:26px}
+  .dash-cols{grid-template-columns:1fr}
+  .shirt-layout{grid-template-columns:1fr}
+  .set-grid{grid-template-columns:1fr}
+  .shirt-stats{grid-template-columns:1fr 1fr 1fr}
+  .topbar{padding:0 14px}
+}
+
+/* HP kecil 320-360: pastikan tidak overflow */
+@media (max-width:380px){
+  .content{padding:14px 10px 120px}
+  .stat-grid{grid-template-columns:1fr 1fr;gap:9px}
+  .stat{padding:12px}
+  .stat-value{font-size:19px}
+  .stat-feature .stat-value{font-size:23px}
+  .page-head{align-items:stretch;flex-direction:column}
+  .page-actions .btn{flex:1}
+  .shirt-stats{grid-template-columns:1fr}
+  .toolbar select{flex:1;min-width:0}
+  .kas-summary-value{font-size:22px}
+  .modal{padding:16px}
+  .login-card{padding:22px 18px}
+}
+
+/* Tablet */
+@media (min-width:901px) and (max-width:1200px){
+  .stat-grid{grid-template-columns:repeat(3,1fr)}
+  .stat-feature{grid-column:1/-1}
+  .dash-cols{grid-template-columns:1fr 1fr}
+  .bottom-nav{display:none}
+  .content{padding-bottom:48px}
+}
+
+/* Desktop: matikan bottom nav, pakai sidebar */
+@media (min-width:901px){
+  .bottom-nav{display:none}
+  .content{padding-bottom:48px}
+}
+@media (min-width:1201px){
+  .stat-grid{grid-template-columns:repeat(5,1fr)}
+  .stat-feature{grid-column:1/-1;grid-template-columns:1fr auto;align-items:center}
+}

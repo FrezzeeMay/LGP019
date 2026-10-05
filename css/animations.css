@@ -1,0 +1,93 @@
+/* KasKita animations.css
+   Motion dibuat ringan dan tajam: elemen berisi teks tidak dianimasikan dengan
+   transform/scale agar font tidak terlihat blur/flicker saat compositing browser.
+*/
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInFast {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Initial login: hanya opacity, tidak menggeser card sehingga teks tetap tajam. */
+.page-enter {
+  animation: fadeIn .22s ease-out both;
+}
+
+/* View navigation: fade-only agar pergantian halaman tidak membuat teks berbayang. */
+.view.is-active {
+  animation: fadeInFast .18s ease-out both;
+}
+
+/* Dashboard cards: stagger tetap ada, tetapi tanpa translate/scale. */
+.stat-grid .stat:nth-child(1) { animation: fadeIn .18s .01s both; }
+.stat-grid .stat:nth-child(2) { animation: fadeIn .18s .03s both; }
+.stat-grid .stat:nth-child(3) { animation: fadeIn .18s .05s both; }
+.stat-grid .stat:nth-child(4) { animation: fadeIn .18s .07s both; }
+.stat-grid .stat:nth-child(5) { animation: fadeIn .18s .09s both; }
+.stat-grid .stat:nth-child(6) { animation: fadeIn .18s .11s both; }
+
+/* Modal: backdrop boleh blur, panel cukup fade agar isi modal tetap crisp. */
+.modal-backdrop:not([hidden]) .modal {
+  animation: fadeIn .16s ease-out both;
+}
+
+/* Mobile sheet: hindari translate pada panel karena teks dapat terlihat soft. */
+.sheet-backdrop:not([hidden]) .sheet {
+  animation: fadeIn .16s ease-out both;
+}
+
+/* Toast: tetap muncul cepat tanpa scale/translate pada teks. */
+.toast {
+  animation: fadeIn .16s ease-out both;
+}
+
+.toast.leaving {
+  opacity: 0;
+  transition: opacity .16s ease;
+}
+
+.notif-pop:not([hidden]) {
+  animation: fadeIn .14s ease-out both;
+}
+
+/* Status/data changes tetap smooth tanpa mengubah posisi teks. */
+.table tbody tr,
+.badge,
+.progress span {
+  transition:
+    background-color .2s ease,
+    border-color .2s ease,
+    color .2s ease,
+    width .6s cubic-bezier(.22,1,.36,1);
+}
+
+/* Input focus halus. */
+.field input,
+.field select,
+.search-box,
+.toolbar select {
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+/* Hormati pengguna yang mengurangi gerak. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .view.is-active,
+  .page-enter {
+    animation: none !important;
+  }
+}
